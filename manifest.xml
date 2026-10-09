@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Add-in only (XML) manifest: vereist voor Outlook op iOS/Android. https://elwin23.github.io/sprightly-signature wordt ingevuld door build.js -->
+<OfficeApp xmlns="http://schemas.microsoft.com/office/appforoffice/1.1"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xmlns:bt="http://schemas.microsoft.com/office/officeappbasictypes/1.0"
+           xmlns:mailappor="http://schemas.microsoft.com/office/mailappversionoverrides/1.0"
+           xsi:type="MailApp">
+  <Id>3e05f99e-dcbf-49d8-807f-367bf87a400a</Id>
+  <Version>1.1.0.0</Version>
+  <ProviderName>Sprightly</ProviderName>
+  <DefaultLocale>nl-NL</DefaultLocale>
+  <DisplayName DefaultValue="Sprightly handtekening"/>
+  <Description DefaultValue="Zet automatisch de Sprightly-handtekening onder nieuwe mails, antwoorden en doorgestuurde mails, ook in Outlook mobiel. Met een knop om hem in bestaande drafts in te voegen."/>
+  <IconUrl DefaultValue="https://elwin23.github.io/sprightly-signature/assets/icon-64.png"/>
+  <HighResolutionIconUrl DefaultValue="https://elwin23.github.io/sprightly-signature/assets/icon-128.png"/>
+  <SupportUrl DefaultValue="https://www.sprightly.nl"/>
+  <AppDomains>
+    <AppDomain>https://www.sprightly.nl</AppDomain>
+  </AppDomains>
+  <Hosts>
+    <Host Name="Mailbox"/>
+  </Hosts>
+  <Requirements>
+    <Sets>
+      <Set Name="Mailbox" MinVersion="1.1"/>
+    </Sets>
+  </Requirements>
+  <FormSettings>
+    <Form xsi:type="ItemRead">
+      <DesktopSettings>
+        <SourceLocation DefaultValue="https://elwin23.github.io/sprightly-signature/src/commands.html"/>
+        <RequestedHeight>250</RequestedHeight>
+      </DesktopSettings>
+    </Form>
+  </FormSettings>
+  <Permissions>ReadWriteItem</Permissions>
+  <Rule xsi:type="RuleCollection" Mode="Or">
+    <Rule xsi:type="ItemIs" ItemType="Message" FormType="Read"/>
+  </Rule>
+  <DisableEntityHighlighting>false</DisableEntityHighlighting>
+
+  <VersionOverrides xmlns="http://schemas.microsoft.com/office/mailappversionoverrides" xsi:type="VersionOverridesV1_0">
+    <VersionOverrides xmlns="http://schemas.microsoft.com/office/mailappversionoverrides/1.1" xsi:type="VersionOverridesV1_1">
+      <Requirements>
+        <bt:Sets DefaultMinVersion="1.5">
+          <bt:Set Name="Mailbox"/>
+        </bt:Sets>
+      </Requirements>
+      <Hosts>
+        <Host xsi:type="MailHost">
+          <Runtimes>
+            <!-- HTML-runtime voor web/nieuwe Outlook/Mac/mobiel; JS-only override voor klassieke Outlook voor Windows -->
+            <Runtime resid="WebViewRuntime.Url">
+              <Override type="javascript" resid="JSRuntime.Url"/>
+            </Runtime>
+          </Runtimes>
+
+          <DesktopFormFactor>
+            <FunctionFile resid="WebViewRuntime.Url"/>
+            <ExtensionPoint xsi:type="LaunchEvent">
+              <LaunchEvents>
+                <LaunchEvent Type="OnNewMessageCompose" FunctionName="onNewMessageComposeHandler"/>
+              </LaunchEvents>
+              <SourceLocation resid="WebViewRuntime.Url"/>
+            </ExtensionPoint>
+
+            <!-- Knop "Handtekening invoegen" in het opstelvenster (desktop/web), voor bestaande drafts -->
+            <ExtensionPoint xsi:type="MessageComposeCommandSurface">
+              <OfficeTab id="TabDefault">
+                <Group id="sprightlySignatureGroup">
+                  <Label resid="Group.Label"/>
+                  <Control xsi:type="Button" id="insertSignatureButton">
+                    <Label resid="Button.Label"/>
+                    <Supertip>
+                      <Title resid="Button.Label"/>
+                      <Description resid="Button.Tooltip"/>
+                    </Supertip>
+                    <Icon>
+                      <bt:Image size="16" resid="Icon.16x16"/>
+                      <bt:Image size="32" resid="Icon.32x32"/>
+                      <bt:Image size="80" resid="Icon.80x80"/>
+                    </Icon>
+                    <Action xsi:type="ExecuteFunction">
+                      <FunctionName>insertSignatureCommand</FunctionName>
+                    </Action>
+                  </Control>
+                </Group>
+              </OfficeTab>
+            </ExtensionPoint>
+          </DesktopFormFactor>
+
+          <MobileFormFactor>
+            <FunctionFile resid="WebViewRuntime.Url"/>
+            <ExtensionPoint xsi:type="LaunchEvent">
+              <LaunchEvents>
+                <LaunchEvent Type="OnNewMessageCompose" FunctionName="onNewMessageComposeHandler"/>
+              </LaunchEvents>
+              <SourceLocation resid="WebViewRuntime.Url"/>
+            </ExtensionPoint>
+          </MobileFormFactor>
+        </Host>
+      </Hosts>
+      <Resources>
+        <bt:Images>
+          <bt:Image id="Icon.16x16" DefaultValue="https://elwin23.github.io/sprightly-signature/assets/icon-16.png"/>
+          <bt:Image id="Icon.32x32" DefaultValue="https://elwin23.github.io/sprightly-signature/assets/icon-32.png"/>
+          <bt:Image id="Icon.80x80" DefaultValue="https://elwin23.github.io/sprightly-signature/assets/icon-80.png"/>
+        </bt:Images>
+        <bt:Urls>
+          <bt:Url id="WebViewRuntime.Url" DefaultValue="https://elwin23.github.io/sprightly-signature/src/commands.html"/>
+          <bt:Url id="JSRuntime.Url" DefaultValue="https://elwin23.github.io/sprightly-signature/src/launchevent.js"/>
+        </bt:Urls>
+        <bt:ShortStrings>
+          <bt:String id="Group.Label" DefaultValue="Sprightly"/>
+          <bt:String id="Button.Label" DefaultValue="Handtekening invoegen"/>
+        </bt:ShortStrings>
+        <bt:LongStrings>
+          <bt:String id="Button.Tooltip" DefaultValue="Zet de Sprightly-handtekening onder dit bericht, bijvoorbeeld in een draft die al klaarstond."/>
+        </bt:LongStrings>
+      </Resources>
+    </VersionOverrides>
+  </VersionOverrides>
+</OfficeApp>
